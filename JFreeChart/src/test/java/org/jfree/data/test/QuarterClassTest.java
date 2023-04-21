@@ -1,5 +1,6 @@
 package org.jfree.data.test;
-import static org.junit.Assert.assertEquals;
+
+import org.junit.Assert;
 import org.jfree.data.time.Quarter;
 import org.junit.Test;
 
@@ -13,12 +14,12 @@ public class QuarterClassTest {
     private void arrange() {
         quarter = new Quarter();
     }
-    @Test
-    public void testQuarterDefaultCtor() {
-        arrange();
-        assertEquals(2023, quarter.getYear().getYear());
-        assertEquals(2, quarter.getQuarter());
-    }
 
+    @Test
+    public void testQuarterDefaultConstructor() {
+        arrange();
+        Assert.assertEquals(2023, quarter.getYear().getYear());
+        Assert.assertEquals(2, quarter.getQuarter());
+    }
 
 }

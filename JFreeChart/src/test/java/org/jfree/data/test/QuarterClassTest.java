@@ -15,7 +15,6 @@ public class QuarterClassTest {
         Assert.assertEquals(quarterInt, quarter.getQuarter());
     }
 
-
     @Test
     public void testDefaultConstructor() {
         Quarter quarter = new Quarter();
@@ -28,24 +27,34 @@ public class QuarterClassTest {
         assertQuarter(quarter, 2023, 3);
     }
 
-    @Test(expected=IllegalArgumentException.class) // Spec says supported range is from Q1 to Q4
+    @Test(expected = IllegalArgumentException.class) // Spec says supported range is from Q1 to Q4
     public void testNegativeQuarterConstructor() {
         new Quarter(-1, 2023);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testOverLimitQuarterConstructor() {
         new Quarter(5, 2023);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
+    public void testZeroQuarterConstructor() {
+        new Quarter(0, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testNegativeYearConstructor() {
         new Quarter(1, -2023);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testOverLimitIntYearConstructor() {
         new Quarter(3, 10000);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnderLimitPositiveYearConstructor() {
+        new Quarter(3, 1000);
     }
 
     @Test
@@ -55,10 +64,40 @@ public class QuarterClassTest {
         assertQuarter(quarter, 2023, 3);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testOverLimitActualYearConstructor() {
         Year year = new Year(10000);
         new Quarter(3, year);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnderLimitPositiveActualYearConstructor() {
+        Year year = new Year(1000);
+        new Quarter(3, year);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeActualYearConstructor() {
+        Year year = new Year(-2023);
+        new Quarter(3, year);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNegativeQuarterActualYearConstructor() {
+        Year year = new Year(2023);
+        new Quarter(-1, year);
+    }
+
+    @Test(expected = IllegalArgumentException.class) // Spec says supported range is from Q1 to Q4
+    public void testOverLimitQuarterActualYearConstructor() {
+        Year year = new Year(2023);
+        new Quarter(5, year);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testZeroQuarterActualYearConstructor() {
+        Year year = new Year(2023);
+        new Quarter(0, year);
     }
 
     @Test

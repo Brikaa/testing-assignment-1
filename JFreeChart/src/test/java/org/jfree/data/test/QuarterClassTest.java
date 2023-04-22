@@ -3,11 +3,15 @@ package org.jfree.data.test;
 import org.junit.Assert;
 import org.junit.Before;
 
+import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 import org.jfree.data.time.Quarter;
+import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.Year;
+import org.jfree.date.MonthConstants;
 import org.junit.Test;
 
 public class QuarterClassTest {
@@ -24,7 +28,7 @@ public class QuarterClassTest {
         upperLimitQuarter = new Quarter(MAX_QUARTER, MAX_YEAR);
     }
 
-    // ---------------------------- Constructor tests ----------------------------
+    // ------------------ Constructor tests ------------------
 
     private void assertQuarter(Quarter quarter, int quarterInt, int year) {
         Assert.assertEquals(year, quarter.getYear().getYear());
@@ -32,7 +36,7 @@ public class QuarterClassTest {
     }
 
     @Test
-    public void testDefaultConstructor() {
+    public void testDefaultConstructorAndQuarterYearGetters() {
         Quarter quarter = new Quarter();
         assertQuarter(quarter, 2, 2023);
     }
@@ -128,7 +132,7 @@ public class QuarterClassTest {
         System.out.println(new Quarter(new Date(1672531200000l), null));
     }
 
-    // ---------------------------- compareTo tests ----------------------------
+    // ------------------ compareTo tests ------------------
 
     @Test
     public void testCompareToEqual() {
@@ -161,7 +165,12 @@ public class QuarterClassTest {
         Assert.assertTrue(lowerLimitQuarter.compareTo(new Object()) > 0);
     }
 
-    // ---------------------------- equals tests ----------------------------
+    @Test
+    public void compareToRegularTimePeriod() {
+        Assert.assertTrue(upperLimitQuarter.compareTo(upperLimitQuarter.previous()) > 0);
+    }
+
+    // ------------------ equals tests ------------------
 
     @Test
     public void testEqualsEqual() {
@@ -184,7 +193,7 @@ public class QuarterClassTest {
         Assert.assertNotEquals(lowerLimitQuarter, new Object());
     }
 
-    // ---------------------------- hashCode tests ----------------------------
+    // ------------------ hashCode tests ------------------
 
     @Test
     public void testHashCodeEqual() {
@@ -197,7 +206,7 @@ public class QuarterClassTest {
         Assert.assertNotEquals(lowerLimitQuarter.hashCode(), upperLimitQuarter.hashCode());
     }
 
-    // ---------------------------- getSerialIndex tests ----------------------------
+    // ------------------ getSerialIndex tests ------------------
 
     @Test
     public void testGetSerialIndexEqual() {
@@ -210,7 +219,7 @@ public class QuarterClassTest {
         Assert.assertNotEquals(upperLimitQuarter.getSerialIndex(), lowerLimitQuarter.getSerialIndex());
     }
 
-    // ---------------------------- previous() tests ----------------------------
+    // ------------------ previous() tests ------------------
     @Test
     public void testPrevious() {
         assertQuarter((Quarter) upperLimitQuarter.previous(), MAX_QUARTER - 1, MAX_YEAR);
@@ -227,7 +236,7 @@ public class QuarterClassTest {
         assertQuarter((Quarter) firstQuarterInYear.previous(), MAX_QUARTER, MAX_YEAR - 1);
     }
 
-    // ---------------------------- next() tests ----------------------------
+    // ------------------ next() tests ------------------
     @Test
     public void testNext() {
         assertQuarter((Quarter) lowerLimitQuarter.next(), MIN_QUARTER + 1, MIN_YEAR);
@@ -243,4 +252,204 @@ public class QuarterClassTest {
         Quarter lastQuarterInYear = new Quarter(MAX_QUARTER, MIN_YEAR);
         assertQuarter((Quarter) lastQuarterInYear.next(), MIN_QUARTER, MIN_YEAR + 1);
     }
+
+    // ------------------ toString() tests ------------------
+    public String formQuarterString(Quarter quarter) {
+        return "Q" + Integer.toString(quarter.getQuarter()) + "/" + Integer.toString(quarter.getYear().getYear());
+    }
+
+    @Test
+    public void testToString() {
+        Assert.assertEquals(formQuarterString(upperLimitQuarter), upperLimitQuarter.toString());
+        Assert.assertEquals(formQuarterString(lowerLimitQuarter), lowerLimitQuarter.toString());
+    }
+
+    // ------------------ getFirstMillisecond(Calendar),
+    // getLastMillisecond(Calendar) tests ------------------
+    private abstract class MillisecondsFunction {
+        public long execute(Quarter quarter, String tzid) {
+            TimeZone tz = TimeZone.getTimeZone(tzid);
+            return getMilliseconds(quarter, tz);
+        }
+
+        public abstract long getMilliseconds(Quarter quarter, TimeZone tz);
+    }
+
+    private class FirstMilliseconds extends MillisecondsFunction {
+        @Override
+        public long getMilliseconds(Quarter quarter, TimeZone tz) {
+            return quarter.getFirstMillisecond(Calendar.getInstance(tz));
+        }
+    }
+
+    private class LastMilliseconds extends MillisecondsFunction {
+        @Override
+        public long getMilliseconds(Quarter quarter, TimeZone tz) {
+            return quarter.getLastMillisecond(Calendar.getInstance(tz));
+        }
+
+    }
+
+    private void assertMilliseconds(Quarter quarter, long expectedMilliseconds, String tzid, MillisecondsFunction fn) {
+        long milliseconds = fn.execute(quarter, tzid);
+        Assert.assertEquals(expectedMilliseconds, milliseconds);
+    }
+
+    @Test
+    public void testGetFirstMillisecond() {
+        assertMilliseconds(upperLimitQuarter, 253394341200000l, "Africa/Cairo", new FirstMilliseconds());
+    }
+
+    @Test
+    public void testGetFirstMillisecondNegative() {
+        assertMilliseconds(lowerLimitQuarter, -2208996000000l, "Africa/Cairo", new FirstMilliseconds());
+    }
+
+    @Test
+    public void testGetLastMillisecond() {
+        assertMilliseconds(upperLimitQuarter, 253402293599999l, "Africa/Cairo", new LastMilliseconds());
+    }
+
+    @Test
+    public void testGetLastMillisecondNegative() {
+        assertMilliseconds(lowerLimitQuarter, -2201220309001l, "Africa/Cairo", new LastMilliseconds());
+    }
+
+    // ------------------ parseQuarter() tests ------------------
+    @Test
+    public void testParseQuarterYearFirstSpace() {
+        assertQuarter(Quarter.parseQuarter("2023 Q1"), 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstSpaceUpperLimitYear() {
+        Quarter.parseQuarter("10000 Q1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstSpaceLowerLimitYear() {
+        Quarter.parseQuarter("1000 Q1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstSpaceInvalidQuarter() {
+        Quarter.parseQuarter("2023 Q5");
+    }
+
+    @Test
+    public void testParseQuarterYearFirstDash() {
+        assertQuarter(Quarter.parseQuarter("2023-Q1"), 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstDashUpperLimitYear() {
+        Quarter.parseQuarter("10000-Q1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstDashLowerLimitYear() {
+        Quarter.parseQuarter("1000-Q1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstDashInvalidQuarter() {
+        Quarter.parseQuarter("2023-Q5");
+    }
+
+    @Test
+    public void testParseQuarterYearFirstSlash() {
+        assertQuarter(Quarter.parseQuarter("2023/Q1"), 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstSlashUpperLimitYear() {
+        Quarter.parseQuarter("10000/Q1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstSlashLowerLimitYear() {
+        Quarter.parseQuarter("1000/Q1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterYearFirstSlashInvalidQuarter() {
+        Quarter.parseQuarter("2023/Q5");
+    }
+
+    @Test
+    public void testParseQuarterQuarterFirstSpace() {
+        assertQuarter(Quarter.parseQuarter("Q1 2023"), 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstSpaceUpperLimitYear() {
+        Quarter.parseQuarter("Q1 10000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstSpaceLowerLimitYear() {
+        Quarter.parseQuarter("Q1 1000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstSpaceInvalidQuarter() {
+        Quarter.parseQuarter("Q5 2023");
+    }
+
+    @Test
+    public void testParseQuarterQuarterFirstDash() {
+        assertQuarter(Quarter.parseQuarter("Q1-2023"), 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstDashUpperLimitYear() {
+        Quarter.parseQuarter("Q1-10000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstDashLowerLimitYear() {
+        Quarter.parseQuarter("Q1-1000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstDashInvalidQuarter() {
+        Quarter.parseQuarter("Q5-2023");
+    }
+
+    @Test
+    public void testParseQuarterQuarterFirstSlash() {
+        assertQuarter(Quarter.parseQuarter("Q1/2023"), 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstSlashUpperLimitYear() {
+        Quarter.parseQuarter("Q1/10000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstSlashLowerLimitYear() {
+        Quarter.parseQuarter("Q1/1000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterQuarterFirstSlashInvalidQuarter() {
+        Quarter.parseQuarter("Q5/2023");
+    }
+
+    // ------------------ Misc ------------------
+    @Test
+    public void testIfSerializable() {
+        Assert.assertTrue(lowerLimitQuarter instanceof Serializable);
+    }
+
+    @Test
+    public void testIfTimePeriod() {
+        Assert.assertTrue(lowerLimitQuarter instanceof TimePeriod);
+    }
+
+    @Test
+    public void testIfMonthConstants() {
+        Assert.assertTrue(lowerLimitQuarter instanceof MonthConstants);
+    }
+
 }

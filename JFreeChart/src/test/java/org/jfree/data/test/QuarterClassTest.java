@@ -58,33 +58,33 @@ public class QuarterClassTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnderLimitPositiveYearConstructor() {
+    public void testUnderLimitYearConstructor() {
         new Quarter(3, MIN_YEAR - 1);
     }
 
     @Test
-    public void testQuarterAndActualYearConstructor() {
+    public void testQuarterAndYearObjectConstructor() {
         Quarter quarter = new Quarter(MAX_QUARTER, new Year(MAX_YEAR));
         assertQuarter(quarter, MAX_QUARTER, MAX_YEAR);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testOverLimitActualYearConstructor() {
+    public void testOverLimitYearObjectConstructor() {
         new Quarter(MAX_QUARTER, new Year(MAX_YEAR + 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnderLimitPositiveActualYearConstructor() {
-        new Quarter(MAX_QUARTER, new Year(MAX_YEAR + 1));
+    public void testUnderLimitYearObjectConstructor() {
+        new Quarter(MAX_QUARTER, new Year(MIN_YEAR - 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testOverLimitQuarterActualYearConstructor() {
+    public void testOverLimitQuarterYearObjectConstructor() {
         new Quarter(MAX_QUARTER + 1, new Year(MAX_YEAR));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnderLimitQuarterActualYearConstructor() {
+    public void testUnderLimitQuarterYearObjectConstructor() {
         new Quarter(MIN_QUARTER - 1, new Year(MAX_YEAR));
     }
 
@@ -103,6 +103,11 @@ public class QuarterClassTest {
     @Test(expected = IllegalArgumentException.class)
     public void testOverLimitDateConstructor() {
         new Quarter(new Date(253412011061000l));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnderLimitDateConstructor() {
+        new Quarter(new Date(-2240521139000l));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -127,7 +132,7 @@ public class QuarterClassTest {
 
     @Test
     public void testCompareToEqual() {
-        Quarter quarter = new Quarter(1, 1900);
+        Quarter quarter = new Quarter(MIN_QUARTER, MIN_YEAR);
         Assert.assertEquals(0, lowerLimitQuarter.compareTo(quarter));
     }
 
@@ -160,7 +165,8 @@ public class QuarterClassTest {
 
     @Test
     public void testEqualsEqual() {
-        Assert.assertEquals(lowerLimitQuarter, lowerLimitQuarter);
+        Quarter quarter = new Quarter(MIN_QUARTER, MIN_YEAR);
+        Assert.assertEquals(lowerLimitQuarter, quarter);
     }
 
     @Test
@@ -182,11 +188,59 @@ public class QuarterClassTest {
 
     @Test
     public void testHashCodeEqual() {
-        Assert.assertEquals(lowerLimitQuarter.hashCode(), lowerLimitQuarter.hashCode());
+        Quarter quarter = new Quarter(MIN_QUARTER, MIN_YEAR);
+        Assert.assertEquals(lowerLimitQuarter.hashCode(), quarter.hashCode());
     }
 
     @Test
     public void testHashCodeNotEqual() {
         Assert.assertNotEquals(lowerLimitQuarter.hashCode(), upperLimitQuarter.hashCode());
+    }
+
+    // ---------------------------- getSerialIndex tests ----------------------------
+
+    @Test
+    public void testGetSerialIndexEqual() {
+        Quarter quarter = new Quarter(MAX_QUARTER, MAX_YEAR);
+        Assert.assertEquals(upperLimitQuarter.getSerialIndex(), quarter.getSerialIndex());
+    }
+
+    @Test
+    public void testGetSerialIndexNotEqual() {
+        Assert.assertNotEquals(upperLimitQuarter.getSerialIndex(), lowerLimitQuarter.getSerialIndex());
+    }
+
+    // ---------------------------- previous() tests ----------------------------
+    @Test
+    public void testPrevious() {
+        assertQuarter((Quarter) upperLimitQuarter.previous(), MAX_QUARTER - 1, MAX_YEAR);
+    }
+
+    @Test
+    public void testPreviousLowerLimit() {
+        Assert.assertNull(lowerLimitQuarter.previous());
+    }
+
+    @Test
+    public void testPreviousYear() {
+        Quarter firstQuarterInYear = new Quarter(MIN_QUARTER, MAX_YEAR);
+        assertQuarter((Quarter) firstQuarterInYear.previous(), MAX_QUARTER, MAX_YEAR - 1);
+    }
+
+    // ---------------------------- next() tests ----------------------------
+    @Test
+    public void testNext() {
+        assertQuarter((Quarter) lowerLimitQuarter.next(), MIN_QUARTER + 1, MIN_YEAR);
+    }
+
+    @Test
+    public void testNextUpperLimit() {
+        Assert.assertNull(upperLimitQuarter.next());
+    }
+
+    @Test
+    public void testNextYear() {
+        Quarter lastQuarterInYear = new Quarter(MAX_QUARTER, MIN_YEAR);
+        assertQuarter((Quarter) lastQuarterInYear.next(), MIN_QUARTER, MIN_YEAR + 1);
     }
 }

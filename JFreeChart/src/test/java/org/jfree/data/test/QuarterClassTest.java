@@ -15,15 +15,13 @@ public class QuarterClassTest {
     private final int MAX_YEAR = 9999;
     private final int MIN_QUARTER = 1;
     private final int MAX_QUARTER = 4;
-    private final int NORMAL_YEAR = 2023;
-    private final int NORMAL_QUARTER = 3;
-    private Quarter q1Y1900;
-    private Quarter q4Y9999;
+    private Quarter lowerLimitQuarter;
+    private Quarter upperLimitQuarter;
 
     @Before
     public void init() {
-        q1Y1900 = new Quarter(MIN_QUARTER, MIN_YEAR);
-        q4Y9999 = new Quarter(MAX_QUARTER, MAX_YEAR);
+        lowerLimitQuarter = new Quarter(MIN_QUARTER, MIN_YEAR);
+        upperLimitQuarter = new Quarter(MAX_QUARTER, MAX_YEAR);
     }
 
     // ---------------------------- Constructor tests ----------------------------
@@ -41,7 +39,7 @@ public class QuarterClassTest {
 
     @Test
     public void testQuarterAndIntYearConstructor() {
-        assertQuarter(new Quarter(NORMAL_QUARTER, NORMAL_YEAR), NORMAL_QUARTER, NORMAL_YEAR);
+        assertQuarter(new Quarter(MAX_QUARTER, MAX_YEAR), MAX_QUARTER, MAX_YEAR);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -66,28 +64,33 @@ public class QuarterClassTest {
 
     @Test
     public void testQuarterAndActualYearConstructor() {
-        Quarter quarter = new Quarter(NORMAL_QUARTER, new Year(NORMAL_YEAR));
-        assertQuarter(quarter, NORMAL_QUARTER, NORMAL_YEAR);
+        Quarter quarter = new Quarter(MAX_QUARTER, new Year(MAX_YEAR));
+        assertQuarter(quarter, MAX_QUARTER, MAX_YEAR);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testOverLimitActualYearConstructor() {
-        new Quarter(NORMAL_QUARTER, new Year(MAX_YEAR + 1));
+        new Quarter(MAX_QUARTER, new Year(MAX_YEAR + 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testUnderLimitPositiveActualYearConstructor() {
-        new Quarter(NORMAL_QUARTER, new Year(MAX_YEAR + 1));
+        new Quarter(MAX_QUARTER, new Year(MAX_YEAR + 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testOverLimitQuarterActualYearConstructor() {
-        new Quarter(MAX_QUARTER + 1, new Year(NORMAL_YEAR));
+        new Quarter(MAX_QUARTER + 1, new Year(MAX_YEAR));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testUnderLimitQuarterActualYearConstructor() {
-        new Quarter(MIN_QUARTER - 1, new Year(NORMAL_YEAR));
+        new Quarter(MIN_QUARTER - 1, new Year(MAX_YEAR));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testQuarterAndNullYearConstructor() {
+        new Quarter(MAX_QUARTER, null);
     }
 
     @Test
@@ -95,6 +98,16 @@ public class QuarterClassTest {
         Date date = new Date(1672531200000l);
         Quarter quarter = new Quarter(date);
         assertQuarter(quarter, 1, 2023);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOverLimitDateConstructor() {
+        new Quarter(new Date(253412011061000l));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullDateConstructor() {
+        new Quarter(null);
     }
 
     @Test
@@ -105,70 +118,75 @@ public class QuarterClassTest {
         assertQuarter(quarter, 1, 2023);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testDateAndNullConstructor() {
+        System.out.println(new Quarter(new Date(1672531200000l), null));
+    }
+
     // ---------------------------- compareTo tests ----------------------------
 
     @Test
     public void testCompareToEqual() {
         Quarter quarter = new Quarter(1, 1900);
-        Assert.assertEquals(0, q1Y1900.compareTo(quarter));
+        Assert.assertEquals(0, lowerLimitQuarter.compareTo(quarter));
     }
 
     @Test
     public void testCompareToEqualToSelf() {
-        Assert.assertEquals(0, q1Y1900.compareTo(q1Y1900));
+        Assert.assertEquals(0, lowerLimitQuarter.compareTo(lowerLimitQuarter));
     }
 
     @Test
     public void testCompareToLessThan() {
-        Assert.assertTrue(q1Y1900.compareTo(q4Y9999) < 0);
+        Assert.assertTrue(lowerLimitQuarter.compareTo(upperLimitQuarter) < 0);
     }
 
     @Test
     public void testCompareToGreaterThan() {
-        Assert.assertTrue(q4Y9999.compareTo(q1Y1900) > 0);
+        Assert.assertTrue(upperLimitQuarter.compareTo(lowerLimitQuarter) > 0);
     }
 
     @Test // Something the spec does not mention (bug?)
     public void testCompareToNull() {
-        Assert.assertTrue(q1Y1900.compareTo(null) > 0);
+        Assert.assertTrue(lowerLimitQuarter.compareTo(null) > 0);
     }
 
     @Test // Something the spec does not mention
     public void compareToDifferentClass() {
-        Assert.assertTrue(q1Y1900.compareTo(new Object()) > 0);
+        Assert.assertTrue(lowerLimitQuarter.compareTo(new Object()) > 0);
     }
 
     // ---------------------------- equals tests ----------------------------
 
     @Test
     public void testEqualsEqual() {
-        Assert.assertEquals(q1Y1900, q1Y1900);
+        Assert.assertEquals(lowerLimitQuarter, lowerLimitQuarter);
     }
 
     @Test
     public void testEqualsNotEqual() {
-        Assert.assertNotEquals(q1Y1900, q4Y9999);
+        Assert.assertNotEquals(lowerLimitQuarter, upperLimitQuarter);
     }
 
     @Test
     public void testEqualsNull() {
-        Assert.assertNotEquals(q1Y1900, null);
+        Assert.assertNotEquals(lowerLimitQuarter, null);
     }
 
     @Test
     public void testEqualsDifferentClass() {
-        Assert.assertNotEquals(q1Y1900, new Object());
+        Assert.assertNotEquals(lowerLimitQuarter, new Object());
     }
 
     // ---------------------------- hashCode tests ----------------------------
 
     @Test
     public void testHashCodeEqual() {
-        Assert.assertEquals(q1Y1900.hashCode(), q1Y1900.hashCode());
+        Assert.assertEquals(lowerLimitQuarter.hashCode(), lowerLimitQuarter.hashCode());
     }
 
     @Test
     public void testHashCodeNotEqual() {
-        Assert.assertNotEquals(q1Y1900.hashCode(), q4Y9999.hashCode());
+        Assert.assertNotEquals(lowerLimitQuarter.hashCode(), upperLimitQuarter.hashCode());
     }
 }

@@ -436,6 +436,11 @@ public class QuarterClassTest {
         Quarter.parseQuarter("Q5/2023");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseQuarterInvalidString() {
+        Quarter.parseQuarter("Q3#2023");
+    }
+
     // ------------------ Misc ------------------
     @Test
     public void testIfSerializable() {

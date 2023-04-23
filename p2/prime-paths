@@ -4,19 +4,19 @@ Prime paths (not test paths)
 1 3 5 6 16 (infeasible)
 1 3 5 6 7 15
 1 3 5 6 7 8 9 10 11 13 14 (infeasible)
-1 3 5 6 7 8 9 10 11 13 15
+1 3 5 6 7 8 9 10 11 13 15 (infeasible)
 1 3 5 6 7 8 9 10 12
 1 3 5 6 7 8 9 13 14 (infeasible)
 1 3 5 6 7 8 9 13 15 (infeasible)
 
 6 7 15 6
-6 7 8 9 10 11 13 15 6
+6 7 8 9 10 11 13 15 6 (infeasible)
 6 7 8 9 13 15 6 (infeasible)
 
 7 15 6 16
 7 15 6 7
-7 8 9 10 11 13 15 6 16
-7 8 9 10 11 13 15 6 7
+7 8 9 10 11 13 15 6 16 (infeasible)
+7 8 9 10 11 13 15 6 7 (infeasible)
 7 8 9 13 15 6 16 (infeasible)
 7 8 9 13 15 6 7 (infeasible)
 
@@ -41,12 +41,11 @@ Prime paths (not test paths)
 12 9 10 11 13 15 6 7 8 (infeasible)
 12 9 10 12
 
-13 15 6 7 8 9 10 11 13
+13 15 6 7 8 9 10 11 13 (infeasible)
 13 15 6 7 8 9 13 (infeasible)
 
 15 6 7 15
 15 6 7 8 9 10 11 13 14 (infeasible)
-15 6 7 8 9 10 11 13 15
+15 6 7 8 9 10 11 13 15 (infeasible)
 15 6 7 8 9 13 14 (infeasible)
 15 6 7 8 9 13 15 (infeasible)
-

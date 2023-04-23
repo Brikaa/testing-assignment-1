@@ -165,7 +165,7 @@ public class QuarterClassTest {
 
     @Test
     public void compareToRegularTimePeriod() {
-        Assert.assertTrue(upperLimitQuarter.compareTo(upperLimitQuarter.previous()) > 0);
+        Assert.assertTrue(lowerLimitQuarter.compareTo(lowerLimitQuarter.next()) < 0);
     }
 
     // ------------------ equals tests ------------------

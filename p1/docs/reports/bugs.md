@@ -64,3 +64,12 @@ Throwing `IllegalArgumentException` or handling null internally is required.
     - `Quarter.parseQuarter("Q5-2023")` (fails to throw `IllegalArgumentException`)
     - `Quarter.parseQuarter("Q5/2023")` (fails to throw `IllegalArgumentException`)
 
+## Comparing a Quarter to another class or to null is undocumented
+- **BR id**: #7
+- **Tester**: Student
+- **Date**: 2023-04-23
+- **Description**: a quarter turns out to be greater than null and greater than another object. This is undocumented.
+- **Method to be tested**: `Quarter.compareTo(Object object)`
+- **Test cases**
+    - `(new Quarter()).compareTo(new Object()) > 0` (returns true. Can't determine whether this is a failure/success since it is undocumented)
+    - `(new Quarter()).compareTo(null) > 0` (returns true. Can't determine whether this is a failure/success since it is undocumented)

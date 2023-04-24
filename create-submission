@@ -2,6 +2,8 @@
 SCRIPT=$(realpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 cd $SCRIPTPATH
-mkdir -p submission/{p1,p2}
-cp p1/{src/test/java/org/jfree/data/test/QuarterClassTest.java,docs/reports/bug-reports.pdf} submission/p1/.
-cp p2/{{edge,prime,node}-coverage.txt,graph.png} submission/p2/.
+SUBMISSION_DIR=A1_20206043_20206123_S5
+mkdir -p $SUBMISSION_DIR/{p1,p2}
+cp p1/{src/test/java/org/jfree/data/test/QuarterClassTest.java,docs/reports/bug-reports.pdf} $SUBMISSION_DIR/p1/.
+cp p2/{{edge,prime,node}-coverage.txt,graph.png} $SUBMISSION_DIR/p2/.
+zip -r $SUBMISSION_DIR.zip $SUBMISSION_DIR

@@ -1,0 +1,7 @@
+#!/bin/bash
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+cd $SCRIPTPATH
+mkdir -p submission/{p1,p2}
+cp p1/{src/test/java/org/jfree/data/test/QuarterClassTest.java,docs/reports/bug-reports.pdf} submission/p1/.
+cp p2/{{edge,prime,node}-coverage.txt,graph.png} submission/p2/.
